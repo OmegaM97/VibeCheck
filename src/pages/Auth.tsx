@@ -6,6 +6,36 @@ import RegisterForm from "../components/RegisterForm";
 import loginPageImage from "../assets/images/login_page_image.jpg";
 import registerPageImage from "../assets/images/register_page_image.jpg";
 
+// Floating music note component
+const MusicNote = ({ index }: { index: number }) => {
+  const notes = ["♪", "♫", "♩", "♬"];
+  const size = `${Math.random() * 2 + 1}rem`;
+  return (
+    <motion.div
+      className="absolute text-blue-300 pointer-events-none"
+      style={{
+        fontSize: size,
+        left: `${Math.random() * 100}vw`,
+        top: `${Math.random() * 100}vh`,
+      }}
+      animate={{
+        y: [0, -100, -200],
+        x: [0, (Math.random() - 0.5) * 100],
+        rotate: Math.random() * 360,
+        opacity: [0.3, 0.8, 0],
+      }}
+      transition={{
+        duration: 20 + Math.random() * 20,
+        repeat: Infinity,
+        delay: index * 0.3,
+        ease: "linear",
+      }}
+    >
+      {notes[index % notes.length]}
+    </motion.div>
+  );
+};
+
 export default function Auth() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,13 +71,20 @@ export default function Auth() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-indigo-900 to-gray-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-indigo-900 to-gray-900 p-4 relative overflow-hidden">
+      {/* Floating music notes background */}
+      {[...Array(30)].map((_, i) => (
+        <MusicNote key={i} index={i} />
+      ))}
+
+      {/* Rest of your existing auth component */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full"
+        className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full relative z-10"
       >
+        {/* ... rest of your existing JSX remains exactly the same ... */}
         <AnimatePresence mode="popLayout">
           {mode === "register" && (
             <motion.div

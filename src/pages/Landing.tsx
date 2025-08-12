@@ -23,7 +23,7 @@ export default function Landing() {
           opacity: [0.3, 0.8, 0],
         }}
         transition={{
-          duration: 20 + Math.random() * 20,
+          duration: 10 + Math.random() * 20,
           repeat: Infinity,
           delay: index * 0.3,
           ease: "linear",
