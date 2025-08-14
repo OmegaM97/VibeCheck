@@ -29,6 +29,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
 
   const onSubmit = (data: LoginFormInputs) => {
     console.log("login submitted", data);
+    navigate("/dashboard");
   };
 
   return (
