@@ -11,7 +11,7 @@ import MoodSelector from "../components/MoodSelector";
 import QuoteCard from "../components/QuoteCard";
 import JournalCard from "../components/JournalCard";
 import PlaylistCard from "../components/PlaylistCard";
-import type { Track, MoodKey } from "../data/playlistInterface";
+import type { Track, MoodKey } from "../utils/playlistInterface";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ---------------- Gemini Client ----------------

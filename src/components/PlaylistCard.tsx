@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { Playlist } from "../data/playlistInterface";
+import type { Playlist } from "../utils/playlistInterface";
 
 export default function PlaylistCard({ playlist }: { playlist: Playlist }) {
   return (

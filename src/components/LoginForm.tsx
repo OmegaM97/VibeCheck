@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import * as z from "zod";
 import { useState } from "react";
-import { supabase } from "../lib/supabaseClient"; // <- ensure this path matches your project
+import { supabase } from "../lib/supabaseClient";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

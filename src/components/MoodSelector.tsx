@@ -1,4 +1,4 @@
-import { type MoodKey } from "../data/playlistInterface";
+import { type MoodKey } from "../utils/playlistInterface";
 import { motion } from "framer-motion";
 import happyFace from "../assets/images/happy-face.png";
 import sadface from "../assets/images/sad-face.png";
