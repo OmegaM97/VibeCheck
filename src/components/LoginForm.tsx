@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import * as z from "zod";
+import { useState } from "react";
+import { supabase } from "../lib/supabaseClient"; // <- ensure this path matches your project
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -19,6 +21,9 @@ interface LoginFormProps {
 
 export default function LoginForm({ switchToRegister }: LoginFormProps) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -27,15 +32,57 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("login submitted", data);
-    navigate("/dashboard");
+  const onSubmit = async (data: LoginFormInputs) => {
+    setLoading(true);
+    setLoginError(null);
+
+    try {
+      const { email, password } = data;
+
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      // If Supabase returned an error object
+      if (error) {
+        const msg = (error.message ?? "").toString().toLowerCase();
+
+        // Detect invalid credentials-ish errors
+        if (
+          msg.includes("invalid") ||
+          msg.includes("credentials") ||
+          msg.includes("password") ||
+          msg.includes("email")
+        ) {
+          setLoginError("Invalid username or password.");
+        } else {
+          // Generic server-side error (not network)
+          setLoginError("Something went wrong. Please try again later.");
+        }
+        return;
+      }
+
+      // If no error and user present -> success
+      if (authData?.user) {
+        navigate("/dashboard");
+      } else {
+        // Fallback for unexpected nulls
+        setLoginError("Unable to login. Please try again.");
+      }
+    } catch (err) {
+      // Network or fetch-level errors land here
+      setLoginError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-4 min-h-108 justify-center"
+      noValidate
     >
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
@@ -104,10 +151,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        <label className="flex items-center gap-2 text-gray-600">
-          <input type="checkbox" className="accent-cyan-500 w-4 h-4" />
-          Remember me
-        </label>
+        <label className="flex items-center gap-2 text-gray-600"></label>
         <motion.button
           type="button"
           whileHover={{ scale: 1.05 }}
@@ -121,21 +165,43 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
 
       <motion.button
         type="submit"
+        disabled={loading}
         whileHover={{
-          scale: 1.02,
-          boxShadow: "0 4px 20px rgba(34, 211, 238, 0.3)",
+          scale: loading ? 1 : 1.02,
+          boxShadow: loading ? "none" : "0 4px 20px rgba(34, 211, 238, 0.3)",
         }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold mt-2 relative overflow-hidden"
+        whileTap={{ scale: loading ? 1 : 0.98 }}
+        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold mt-2 relative overflow-hidden flex items-center justify-center"
       >
-        <span className="relative z-10">Login</span>
+        {loading ? (
+          <motion.div
+            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+            aria-hidden="true"
+          />
+        ) : (
+          <span className="relative z-10">Login</span>
+        )}
+
+        {/* subtle hover gloss preserved */}
         <motion.div
           className="absolute inset-0 bg-white/10"
           initial={{ x: "-100%" }}
           whileHover={{ x: "100%" }}
           transition={{ duration: 0.8 }}
+          aria-hidden="true"
         />
       </motion.button>
+
+      {/* Form level error messages (network / auth / server) */}
+      {loginError && (
+        <motion.p
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-red-500 text-sm text-center mt-2"
+        >
+          {loginError}
+        </motion.p>
+      )}
 
       <motion.div
         className="text-sm text-center text-gray-600 mt-4"

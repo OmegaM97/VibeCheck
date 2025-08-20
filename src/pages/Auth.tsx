@@ -77,14 +77,12 @@ export default function Auth() {
         <MusicNote key={i} index={i} />
       ))}
 
-      {/* Rest of your existing auth component */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full relative z-10"
+        className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full min-h-135 relative z-10"
       >
-        {/* ... rest of your existing JSX remains exactly the same ... */}
         <AnimatePresence mode="popLayout">
           {mode === "register" && (
             <motion.div

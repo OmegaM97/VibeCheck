@@ -2,13 +2,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import * as z from "zod";
+import { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 const registerSchema = z
   .object({
     email: z.string().email({ message: "Invalid email address" }),
-    username: z
-      .string()
-      .min(3, { message: "Username must be at least 3 characters" }),
     password: z
       .string()
       .min(6, { message: "Password must be at least 6 characters" }),
@@ -26,6 +25,10 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
+  const [loading, setLoading] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+  const [registerMessage, setRegisterMessage] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -34,12 +37,46 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterFormInputs) => {
-    console.log("register submitted", data);
+  const onSubmit = async (data: RegisterFormInputs) => {
+    setLoading(true);
+    setRegisterError(null);
+    setRegisterMessage(null);
+
+    try {
+      const { email, password } = data;
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        // Optional: handle very specific errors like weak password
+        if ((error.message ?? "").toLowerCase().includes("password")) {
+          setRegisterError("Password is too weak.");
+        } else {
+          setRegisterError("Something went wrong. Please try again later.");
+        }
+        return;
+      }
+
+      // ✅ Neutral message for both new and existing emails
+      setRegisterMessage(
+        "If this is a new email account, a confirmation email has been sent. Otherwise, please log in."
+      );
+    } catch {
+      setRegisterError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-4"
+      noValidate
+    >
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -49,11 +86,8 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         Create Account
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
+      {/* Email */}
+      <motion.div>
         <input
           type="email"
           placeholder="Email"
@@ -65,47 +99,12 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
           }`}
         />
         {errors.email && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-red-500 text-sm mt-1"
-          >
-            {errors.email.message}
-          </motion.p>
+          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
         )}
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-      >
-        <input
-          type="text"
-          placeholder="Username"
-          {...register("username")}
-          className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
-            errors.username
-              ? "border-red-500 focus:ring-red-500/30"
-              : "border-gray-200 focus:ring-cyan-500/30"
-          }`}
-        />
-        {errors.username && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-red-500 text-sm mt-1"
-          >
-            {errors.username.message}
-          </motion.p>
-        )}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      {/* Password */}
+      <motion.div>
         <input
           type="password"
           placeholder="Password"
@@ -117,21 +116,12 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
           }`}
         />
         {errors.password && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-red-500 text-sm mt-1"
-          >
-            {errors.password.message}
-          </motion.p>
+          <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
         )}
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
-      >
+      {/* Confirm Password */}
+      <motion.div>
         <input
           type="password"
           placeholder="Confirm Password"
@@ -143,51 +133,46 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
           }`}
         />
         {errors.confirmPassword && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-red-500 text-sm mt-1"
-          >
+          <p className="text-red-500 text-sm mt-1">
             {errors.confirmPassword.message}
-          </motion.p>
+          </p>
         )}
       </motion.div>
 
+      {/* Register Button */}
       <motion.button
         type="submit"
-        whileHover={{
-          scale: 1.02,
-          boxShadow: "0 4px 20px rgba(34, 211, 238, 0.3)",
-        }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold mt-2 relative overflow-hidden"
+        disabled={loading}
+        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold mt-2 relative flex items-center justify-center"
       >
-        <span className="relative z-10">Register</span>
-        <motion.div
-          className="absolute inset-0 bg-white/10"
-          initial={{ x: "-100%" }}
-          whileHover={{ x: "100%" }}
-          transition={{ duration: 0.8 }}
-        />
+        {loading ? (
+          <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : (
+          "Register"
+        )}
       </motion.button>
 
-      <motion.div
-        className="text-sm text-center text-gray-600 mt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
+      {/* Messages */}
+      {registerError && (
+        <p className="text-red-500 text-sm text-center mt-2">{registerError}</p>
+      )}
+      {registerMessage && (
+        <p className="text-green-500 text-sm text-center mt-2">
+          {registerMessage}
+        </p>
+      )}
+
+      {/* Switch to login */}
+      <div className="text-sm text-center text-gray-600 mt-4">
         Already have an account?{" "}
-        <motion.button
+        <button
           type="button"
           onClick={switchToLogin}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           className="text-cyan-600 font-medium hover:underline"
         >
           Sign in
-        </motion.button>
-      </motion.div>
+        </button>
+      </div>
     </form>
   );
 }
