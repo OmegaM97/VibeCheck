@@ -1,8 +1,18 @@
 // src/components/Navbar.tsx
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Moon, LogOut, Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import logo from "../assets/images/VibeCheck_Logo.png";
+import { supabase } from "../lib/supabaseClient";
+
+export async function signOutUser() {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Error signing out:", error.message);
+  } else {
+    window.location.reload();
+  }
+}
 
 export default function Navbar() {
   const location = useLocation();
@@ -70,23 +80,10 @@ export default function Navbar() {
                 ))}
               </div>
 
-              {/* Dark mode toggle */}
-              <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-md">
-                <Moon size={18} /> Dark Mode
-              </button>
-
-              {/* Settings */}
-              {currentPath !== "/settings" && (
-                <Link
-                  to="/settings"
-                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-md"
-                >
-                  <Settings size={18} /> Settings
-                </Link>
-              )}
-
-              {/* Logout */}
-              <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-md text-red-400">
+              <button
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-md text-red-400"
+                onClick={signOutUser}
+              >
                 <LogOut size={18} /> Logout
               </button>
             </div>

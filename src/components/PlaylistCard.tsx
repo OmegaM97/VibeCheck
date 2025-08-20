@@ -55,6 +55,21 @@ export default function PlaylistCard({ playlist }: { playlist: Playlist }) {
           </li>
         ))}
       </motion.ul>
+
+      <motion.div
+        className="mt-3 flex justify-center pointer-events-none"
+        animate={{ y: [0, 6, 0] }}
+        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+        aria-hidden="true"
+      >
+        <svg
+          className="w-5 h-5 text-white/70"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 16a1 1 0 0 1-.707-.293l-6-6a1 1 0 1 1 1.414-1.414L12 13.586l5.293-5.293a1 1 0 1 1 1.414 1.414l-6 6A1 1 0 0 1 12 16z" />
+        </svg>
+      </motion.div>
     </motion.div>
   );
 }

@@ -41,7 +41,7 @@ export default function MoodSelector({
         How are you feeling today?
       </h3>
 
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="flex flex-wrap gap-3 mb-6 justify-center">
         {MOODS.map((m) => {
           const isSelected = selected === m.key;
 
