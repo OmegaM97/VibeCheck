@@ -1,11 +1,10 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 interface JournalCardProps {
   date?: Date;
 }
-
-const LS_KEY = (dateKey: string) => `journal-entry-${dateKey}`;
 
 export default function JournalCard({ date }: JournalCardProps) {
   const dateKey = date
@@ -23,12 +22,42 @@ export default function JournalCard({ date }: JournalCardProps) {
     day: "numeric",
   });
 
-  // Load saved entry only once per dateKey
+  // ---------------- Load entry from Supabase ----------------
   useEffect(() => {
-    const existing = localStorage.getItem(LS_KEY(dateKey)) || "";
-    setText(existing);
+    const fetchEntry = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const userId = user?.id;
+      try {
+        const { data, error } = await supabase
+          .from("journal_entries")
+          .select("content")
+          .eq("user_id", userId)
+          .eq("entry_date", dateKey)
+          .single(); // only expect 1 entry per day
+
+        if (error && error.code !== "PGRST116") {
+          // PGRST116 = no rows found
+          console.error("Error fetching journal entry:", error.message);
+        }
+
+        if (data) {
+          setText(data.content);
+        } else {
+          setText(""); // return empty if nothing found
+        }
+      } catch (err) {
+        console.error("Unexpected error fetching journal entry:", err);
+        setText(""); // fallback to empty
+      }
+    };
+
+    fetchEntry();
   }, [dateKey]);
 
+  // ---------------- Save entry to Supabase ----------------
   const handleSave = async () => {
     await controls.start({
       scale: [1, 1.05, 1],
@@ -36,9 +65,21 @@ export default function JournalCard({ date }: JournalCardProps) {
       transition: { duration: 0.5 },
     });
 
-    localStorage.setItem(LS_KEY(dateKey), text.trim());
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
+    try {
+      const { error } = await supabase.from("journal_entries").insert({
+        entry_date: dateKey,
+        content: text.trim(),
+      });
+
+      if (error) {
+        console.error("Error saving journal entry:", error.message);
+      } else {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 1500);
+      }
+    } catch (err) {
+      console.error("Unexpected error saving journal entry:", err);
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ import JournalCard from "../components/JournalCard";
 import PlaylistCard from "../components/PlaylistCard";
 import type { Track, MoodKey } from "../utils/playlistInterface";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from "../lib/supabaseClient";
 
 // ---------------- Gemini Client ----------------
 const genAI = new GoogleGenerativeAI(
@@ -98,19 +99,75 @@ Respond ONLY in strict JSON format:
 const Dashboard = () => {
   const [selectedMood, setSelectedMood] = useState<MoodKey | null>(null);
   const [submittedMood, setSubmittedMood] = useState<MoodKey | null>(null);
+  const [databaseSubmittedMood, setDatabaseSubmittedMood] =
+    useState<MoodKey | null>(null);
   const [quote, setQuote] = useState<{ quote: string; author: string } | null>(
     null
   );
-  const [loadingQuote, setLoadingQuote] = useState(false);
   const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [loadingQuote, setLoadingQuote] = useState(false);
   const [loadingPlaylist, setLoadingPlaylist] = useState(false);
+  const [loadingDb, setLoadingDb] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.9]);
   const scale = useTransform(scrollYProgress, [0, 0.1], [1, 0.98]);
 
+  // ---------------- Check DB on load ----------------
+  useEffect(() => {
+    const checkTodayData = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(); // ✅ always gives logged in user
+
+      if (!user) {
+        setLoadingDb(false);
+        return;
+      }
+
+      const userId = user.id;
+      const today = new Date().toISOString().split("T")[0];
+
+      // Check playlist
+      const { data: songs } = await supabase
+        .from("songs")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("date", today);
+
+      // Check quote
+      const { data: quotes } = await supabase
+        .from("quotes")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("date", today);
+
+      if (songs?.length || quotes?.length) {
+        setDatabaseSubmittedMood(songs?.[0]?.mood ?? quotes?.[0]?.mood);
+        setPlaylist(
+          (songs ?? []).map((s: any) => ({
+            id: s.id,
+            title: s.title,
+            artist: s.artist,
+            cover: s.cover_url,
+            link: s.external_url,
+          }))
+        );
+        if (quotes?.[0])
+          setQuote({ quote: quotes[0].text, author: quotes[0].author });
+      }
+
+      setLoadingDb(false);
+    };
+
+    checkTodayData();
+  }, []);
+
+  // ---------------- Fetch Gemini after mood submit ----------------
   useEffect(() => {
     if (!submittedMood) return;
+    const today = new Date().toISOString().split("T")[0];
 
     const getData = async () => {
       setLoadingQuote(true);
@@ -125,10 +182,33 @@ const Dashboard = () => {
       const geminiQuote = await fetchGeminiQuote(submittedMood);
       if (geminiQuote) setQuote(geminiQuote);
       setLoadingQuote(false);
+
+      // Save playlist and quote to DB
+      await Promise.all([
+        ...geminiTracks.map((track) =>
+          supabase.from("songs").insert({
+            mood: submittedMood,
+            title: track.title,
+            artist: track.artist,
+            cover_url: track.cover,
+            external_url: track.link,
+            date: today,
+          })
+        ),
+        supabase.from("quotes").insert({
+          mood: submittedMood,
+          text: geminiQuote?.quote,
+          author: geminiQuote?.author,
+          date: today,
+        }),
+      ]);
     };
 
     getData();
   }, [submittedMood]);
+
+  if (loadingDb)
+    return <p className="text-gray-300 italic">Loading dashboard...</p>;
 
   return (
     <motion.div
@@ -142,7 +222,7 @@ const Dashboard = () => {
       >
         <div className="space-y-8">
           <AnimatePresence mode="wait">
-            {!submittedMood ? (
+            {!playlist.length && !isSubmitting ? (
               <motion.div
                 key="mood-selector"
                 initial={{ opacity: 0, y: 20 }}
@@ -156,7 +236,10 @@ const Dashboard = () => {
                 <MoodSelector
                   selected={selectedMood}
                   onSelect={setSelectedMood}
-                  onSubmit={() => setSubmittedMood(selectedMood)}
+                  onSubmit={() => {
+                    setIsSubmitting(true);
+                    setSubmittedMood(selectedMood);
+                  }}
                 />
               </motion.div>
             ) : (
@@ -170,10 +253,10 @@ const Dashboard = () => {
                 {loadingPlaylist && (
                   <p className="text-gray-300 italic">Loading playlist...</p>
                 )}
-                {submittedMood && !loadingPlaylist && (
+                {databaseSubmittedMood && !loadingPlaylist && (
                   <PlaylistCard
                     playlist={{
-                      name: `${submittedMood} Playlist`,
+                      name: `${databaseSubmittedMood} Playlist`,
                       tracks: playlist,
                     }}
                   />
