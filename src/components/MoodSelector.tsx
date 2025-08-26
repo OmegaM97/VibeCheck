@@ -73,9 +73,15 @@ export default function MoodSelector({
 
       <motion.button
         onClick={onSubmit}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-lg"
+        disabled={!selected}
+        whileHover={selected ? { scale: 1.03 } : {}}
+        whileTap={selected ? { scale: 0.97 } : {}}
+        className={`w-full py-3 font-bold rounded-lg shadow-lg transition-all
+          ${
+            selected
+              ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black"
+              : "bg-gray-400 text-gray-700 cursor-not-allowed"
+          }`}
       >
         Submit Mood
       </motion.button>
