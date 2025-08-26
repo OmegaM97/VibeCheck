@@ -5,6 +5,7 @@ import logo from "../assets/images/VibeCheck_Logo.png";
 export default function Landing() {
   const navigate = useNavigate();
 
+  // floating note animation
   const MusicNote = ({ index }: { index: number }) => {
     const notes = ["♪", "♫", "♩", "♬"];
     const size = `${Math.random() * 2 + 1}rem`;
@@ -36,12 +37,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-gray-900 flex flex-col items-center justify-center text-white px-4 overflow-hidden relative">
-      {/* Full-screen music notes (100 elements) */}
+      {/* background notes */}
       {[...Array(100)].map((_, i) => (
         <MusicNote key={i} index={i} />
       ))}
 
-      {/* Logo */}
+      {/* logo top-left */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -66,6 +67,7 @@ export default function Landing() {
         </span>
       </motion.div>
 
+      {/* hero section */}
       <div className="max-w-4xl mx-auto text-center relative z-10 px-4 w-full">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -90,6 +92,7 @@ export default function Landing() {
           Get inspired, stay balanced, and track how you feel.
         </motion.p>
 
+        {/* action buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -125,9 +128,7 @@ export default function Landing() {
               boxShadow: "0 0 20px rgba(34, 211, 238, 0.3)",
               transition: { duration: 0.3 },
             }}
-            whileTap={{
-              scale: 0.98,
-            }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate("/auth?mode=register")}
             className="px-8 py-3 bg-transparent border-2 border-cyan-400 text-cyan-400 text-lg font-bold rounded-xl relative group"
           >
@@ -141,6 +142,7 @@ export default function Landing() {
           </motion.button>
         </motion.div>
 
+        {/* equalizer bars */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -12,13 +12,8 @@ import QuoteCard from "../components/QuoteCard";
 import JournalCard from "../components/JournalCard";
 import PlaylistCard from "../components/PlaylistCard";
 import type { Track, MoodKey } from "../utils/playlistInterface";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import genAI from "../lib/geminiClient";
 import { supabase } from "../lib/supabaseClient";
-
-// ---------------- Gemini Client ----------------
-const genAI = new GoogleGenerativeAI(
-  import.meta.env.VITE_GEMINI_API_KEY as string
-);
 
 const fetchGeminiPlaylist = async (mood: string): Promise<Track[]> => {
   try {

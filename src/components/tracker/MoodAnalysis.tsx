@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(
-  import.meta.env.VITE_GEMINI_API_KEY as string
-);
+import genAI from "../../lib/geminiClient";
 
 interface Mood {
   mood: string | null;

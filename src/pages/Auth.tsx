@@ -86,7 +86,7 @@ export default function Auth() {
         <AnimatePresence mode="popLayout">
           {mode === "register" && (
             <motion.div
-              key="register-image"
+              key="woman model standing"
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{
@@ -177,7 +177,7 @@ export default function Auth() {
               <div className="absolute inset-0 overflow-hidden">
                 <img
                   src={loginPageImage}
-                  alt="Person enjoying music with headphones"
+                  alt="beautyfull girl smiling"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/105 to-pink-900/80"></div>

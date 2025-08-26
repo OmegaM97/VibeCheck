@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import MoodAnalysis from "../components/tracker/MoodAnalysis";
 
-// Simple music note component without complex typing
+// floating music note element
 const MusicNote = () => {
   const randomLeft = Math.random() * 100;
   const randomAnimationDuration = 15 + Math.random() * 20;
@@ -35,7 +35,7 @@ export default function Tracker() {
   const [notes, setNotes] = useState<React.ReactElement[]>([]);
 
   useEffect(() => {
-    // Create 20 music notes for the background
+    // create 20 random floating notes
     const musicNotes = Array.from({ length: 20 }).map((_, index) => (
       <MusicNote key={index} />
     ));
@@ -44,10 +44,10 @@ export default function Tracker() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-gray-900 relative overflow-hidden">
-      {/* Floating music notes background */}
+      {/* floating music background */}
       <div className="fixed inset-0 pointer-events-none z-0">{notes}</div>
 
-      {/* CSS for the floating animation */}
+      {/* floating animation keyframes */}
       <style>
         {`
           @keyframes floatNote {
@@ -72,17 +72,19 @@ export default function Tracker() {
       <div className="relative z-10">
         <Navbar />
         <div className="px-6 py-8 space-y-12">
-          {/* Week at a Glance */}
+          {/* weekly glance */}
           <MoodGlance />
 
-          {/* Music Suggestions */}
+          {/* daily quote and suggestion */}
           <QuoteGlance />
 
-          {/* Mood Insights */}
+          {/* insights and trends */}
           <MoodInsights />
 
+          {/* mood analysis chart */}
           <MoodAnalysis />
-          {/* Journal Entries */}
+
+          {/* journal entry list */}
           <JournalEntries />
         </div>
         <Footer />
