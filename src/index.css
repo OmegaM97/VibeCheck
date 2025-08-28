@@ -1,5 +1,9 @@
 @import "tailwindcss";
 /* Smooth, flicker-free scrollbar */
+html {
+  scroll-behavior: smooth;
+}
+
 .custom-scroll::-webkit-scrollbar {
   width: 6px;
 }

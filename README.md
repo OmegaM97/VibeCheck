@@ -5,6 +5,13 @@ It helps users **select their daily mood**, receive **personalized music & quote
 
 ---
 
+## live link & Video
+
+- **Live App:** [VibeCheck Live](https://your-deployed-link.vercel.app)
+- **Project Walkthrough (Loom):** [Watch Video](https://www.loom.com/share/your-loom-link)
+
+---
+
 ## 🚀 Features
 
 - 🎭 **Daily Mood Selection** — Pick your vibe for the day from different mood categories.
@@ -71,6 +78,8 @@ VibeCheck is built with a **modern web development stack** that balances **perfo
   - Integrated with `vercel.json` to support React Router SPA routing.
   - Provides **fast CDN** for global users.
 
+---
+
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the repository
@@ -98,12 +107,16 @@ in supabase create the necessary database tables
 npm run dev
 app will be running at http://localhost:5173/
 
+---
+
 ## 🛡️ Future Improvements
 
 Multi-language support (Amharic & English toggle)
 Spotify/YouTube API integration for real-time playlists
 Mood-based meditation & breathing exercises
 Native mobile app with React Native
+
+---
 
 ## Author
 
@@ -112,7 +125,12 @@ Omega Melese
 2nd-year Information Science student @ Addis Ababa University
 ALX Software Engineering student
 Passionate about front-end development, AI integration, and building useful tools
+[Email me](omegamelese68@gmail.com)
+
+---
 
 ## ⭐ Contributing
 
 Contributions are welcome! Please fork the repo and submit a pull request.
+
+---

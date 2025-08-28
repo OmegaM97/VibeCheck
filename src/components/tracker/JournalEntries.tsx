@@ -94,11 +94,11 @@ export default function JournalEntries() {
       </h2>
       <div className="space-y-5">
         {weekEntries.map((entry, idx) => {
-          const isLong = entry.content.length > 200;
+          const isLong = entry.content.length > 150;
           const isExpanded = expandedEntry === entry.entry_date;
           const displayContent = isExpanded
             ? entry.content
-            : entry.content.slice(0, 200);
+            : entry.content.slice(0, 150);
 
           return (
             <div

@@ -66,10 +66,45 @@ export default function JournalCard({ date }: JournalCardProps) {
     });
 
     try {
-      const { error } = await supabase.from("journal_entries").insert({
-        entry_date: dateKey,
-        content: text.trim(),
-      });
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) {
+        console.error("No user logged in");
+        return;
+      }
+
+      const userId = user.id;
+
+      // Check if entry already exists for this user and date
+      const { data: existingEntry, error: fetchError } = await supabase
+        .from("journal_entries")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("entry_date", dateKey)
+        .single();
+
+      if (fetchError && fetchError.code !== "PGRST116") {
+        // "PGRST116" = no rows found (safe to ignore)
+        console.error("Error checking journal entry:", fetchError.message);
+        return;
+      }
+
+      let error;
+
+      if (existingEntry) {
+        // Update existing entry
+        ({ error } = await supabase
+          .from("journal_entries")
+          .update({ content: text.trim() })
+          .eq("id", existingEntry.id)
+          .eq("user_id", userId));
+      } else {
+        // Insert new entry
+        ({ error } = await supabase.from("journal_entries").insert({
+          user_id: userId,
+          entry_date: dateKey,
+          content: text.trim(),
+        }));
+      }
 
       if (error) {
         console.error("Error saving journal entry:", error.message);
