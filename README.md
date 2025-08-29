@@ -7,8 +7,8 @@ It helps users **select their daily mood**, receive **personalized music & quote
 
 ## live link & Video
 
-- **Live App:** [VibeCheck Live](https://your-deployed-link.vercel.app)
-- **Project Walkthrough (Loom):** [Watch Video](https://www.loom.com/share/your-loom-link)
+- **Live App:** [VibeCheck Live](https://vibe-check-two.vercel.app)
+- **Project Walkthrough (Loom):** [Watch Video](https://www.loom.com/share/0737968c8b9b4350860cacdcf78f8236?sid=ca86ab13-9bfe-4a18-8e1e-9ff4e7863b07)
 
 ---
 
