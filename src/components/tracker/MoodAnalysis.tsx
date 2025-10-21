@@ -109,7 +109,7 @@ and give elaborated answer on each topic anddont talk about no entry days`;
         <div className="space-y-6">
           <div className="transform transition-all duration-500 hover:scale-[1.02]">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-blue-200">
-              <span className="text-xl">📊</span> Overall Trend
+              <span className="text-xl"></span> Overall Trend
             </h3>
             <p className="bg-blue-900/30 p-4 rounded-lg border border-blue-700/30 backdrop-blur-sm transition-all duration-300 hover:bg-blue-900/40">
               {analysis.trend}
@@ -118,7 +118,7 @@ and give elaborated answer on each topic anddont talk about no entry days`;
 
           <div className="transform transition-all duration-500 hover:scale-[1.02]">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-emerald-300">
-              <span className="text-xl">✅</span> Positive Highlights
+              <span className="text-xl"></span> Positive Highlights
             </h3>
             <ul className="space-y-2">
               {analysis.positives.map((pos, i) => (
@@ -136,7 +136,7 @@ and give elaborated answer on each topic anddont talk about no entry days`;
 
           <div className="transform transition-all duration-500 hover:scale-[1.02]">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-amber-300">
-              <span className="text-xl">⚠️</span> Areas to Note
+              <span className="text-xl"></span> Areas to Note
             </h3>
             <ul className="space-y-2">
               {analysis.negatives.map((neg, i) => (
@@ -154,7 +154,7 @@ and give elaborated answer on each topic anddont talk about no entry days`;
 
           <div className="transform transition-all duration-500 hover:scale-[1.02]">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-indigo-300">
-              <span className="text-xl">💡</span> Personalized Suggestions
+              <span className="text-xl"></span> Personalized Suggestions
             </h3>
             <ul className="space-y-2">
               {analysis.suggestions.map((sug, i) => (

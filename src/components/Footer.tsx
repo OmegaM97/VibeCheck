@@ -50,7 +50,7 @@ export default function Footer() {
         {/* Social icons section */}
         <div className="flex items-center gap-3 justify-center md:justify-end">
           <SocialIcon
-            href="https://twitter.com/omelese19"
+            href="https://twitter.com/om3ga_m"
             icon={
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path
@@ -75,7 +75,7 @@ export default function Footer() {
           />
 
           <SocialIcon
-            href="https://www.instagram.com/o_m_1197/"
+            href="https://www.instagram.com/om3ga_m/"
             icon={
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path
