@@ -54,7 +54,7 @@ export default function MoodAnalysis() {
 
       // Ask Gemini for JSON structured analysis
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const moodsText = weekData
           .map((m) => `${m.mood_date}: ${m.mood ?? "no entry"}`)
           .join("\n");

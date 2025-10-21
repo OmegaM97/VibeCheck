@@ -17,7 +17,9 @@ import { supabase } from "../lib/supabaseClient";
 
 const fetchGeminiPlaylist = async (mood: string): Promise<Track[]> => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+    });
 
     const prompt = `
 Generate a playlist of 10 songs for the mood "${mood}".
@@ -65,7 +67,7 @@ const fetchGeminiQuote = async (
   mood: string
 ): Promise<{ quote: string; author: string } | null> => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
 Give me one inspirational quote for the mood "${mood}".
